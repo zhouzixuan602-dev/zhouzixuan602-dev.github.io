@@ -5,104 +5,299 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Co-Prosper BCI Network</title>
   <meta name="description" content="An open, co-evolving platform connecting global neuroscience, BCI, and neuroengineering resources for collaborative development and shared growth." />
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0e0f12;
-      color: #e6e6e6;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    h1 {
-      font-size: 2.4rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-    p {
-      font-size: 1.05rem;
-      color: #b8bcc4;
-      margin-bottom: 32px;
-    }
-    .nav {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 40px;
-    }
-    .card {
-      border: 1px solid #2a2d33;
-      border-radius: 10px;
-      padding: 20px;
-      text-decoration: none;
-      color: #e6e6e6;
-      background: #15171c;
-      transition: all 0.2s ease;
-    }
-    .card:hover {
-      border-color: #4c8bf5;
-      transform: translateY(-2px);
-    }
-    .card h2 {
-      font-size: 1.2rem;
-      margin: 0 0 8px 0;
-      color: #ffffff;
-    }
-    .card span {
-      font-size: 0.95rem;
-      color: #a0a6b0;
-    }
-    footer {
-      margin-top: 80px;
-      font-size: 0.85rem;
-      color: #6f7580;
-    }
-    footer a {
-      color: #6f7580;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <div class="container">
-    <h1>Co-Prosper BCI Network</h1>
-    <p>
-      An open, co-evolving platform for the future of brain–computer interfaces.
-      Connecting neuroscience, neuroengineering, and industry resources across regions
-      to enable collaboration, co-development, and shared growth.
-    </p>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./">
+        <span class="brand__mark"></span>
+        <span class="brand__name">Co-Prosper BCI Network</span>
+      </a>
 
-    <div class="nav">
-      <a class="card" href="needs.md">
-        <h2>Needs</h2>
-        <span>What problems, resources, or expertise are being sought</span>
-      </a>
-      <a class="card" href="capabilities.md">
-        <h2>Capabilities</h2>
-        <span>What individuals and teams can reliably contribute</span>
-      </a>
-      <a class="card" href="collaboration.md">
-        <h2>Collaboration</h2>
-        <span>How connections form and projects move forward</span>
-      </a>
-      <a class="card" href="governance.md">
-        <h2>Governance & Ethics</h2>
-        <span>Principles, boundaries, and long-term trust</span>
-      </a>
+      <nav class="nav">
+        <a href="needs.html">Needs</a>
+        <a href="capabilities.html">Capabilities</a>
+        <a href="collaboration.html">Collaboration</a>
+        <a href="governance.html">Governance</a>
+      </nav>
+
+      <div class="topbar__cta">
+        <a class="btn btn--ghost" href="#how">How it works</a>
+        <a class="btn btn--primary" href="#join">Join</a>
+      </div>
     </div>
+  </header>
 
-    <footer>
-      <p>
-        Open by default · Co-prosperity over competition · Built on GitHub Pages  
-        <br/>
-        <a href="https://github.com/zhouzixuan602-dev/github.io">View repository</a>
-      </p>
-    </footer>
+  <main>
+    <section class="hero">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <div class="pill">Open • Co-evolving • Cross-region</div>
+          <h1>
+            A shared platform for the next decade of
+            <span class="grad">Brain–Computer Interfaces</span>
+          </h1>
+          <p class="lead">
+            Match real-world BCI needs with global capabilities—chips, algorithms, materials,
+            clinical pathways, manufacturing, and compliance—so teams can meet, build, and scale together.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#join">Get started</a>
+            <a class="btn btn--ghost" href="#features">See platform functions</a>
+          </div>
+
+          <div class="hero__meta">
+            <div class="meta-card">
+              <div class="meta-card__k">For builders</div>
+              <div class="meta-card__v">Find collaborators + resources fast</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-card__k">For orgs</div>
+              <div class="meta-card__v">Sourcing, partnerships, and co-dev</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-card__k">For labs</div>
+              <div class="meta-card__v">Open roadmaps + reproducible stacks</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__panel">
+          <div class="panel">
+            <div class="panel__title">Example matchmaking</div>
+
+            <div class="match">
+              <div class="match__left">
+                <div class="tag">Need</div>
+                <div class="match__headline">Neural implant needs upgraded ASIC + low-noise front-end</div>
+                <div class="muted">e.g., a company wants next-gen chip design & reliability improvements</div>
+              </div>
+              <div class="match__arrow">→</div>
+              <div class="match__right">
+                <div class="tag tag--alt">Capability</div>
+                <div class="match__headline">US-based mixed-signal IC team + packaging partner</div>
+                <div class="muted">tape-out, verification, packaging, test, and compliance support</div>
+              </div>
+            </div>
+
+            <div class="panel__divider"></div>
+
+            <div class="panel__title">What you can do here</div>
+            <ul class="checklist">
+              <li>Post structured needs (what you want, constraints, timeline)</li>
+              <li>List verified capabilities (what you can deliver reliably)</li>
+              <li>Start collaborations with clear governance & ethics boundaries</li>
+              <li>Optional paid features for discovery, trust, and workflow</li>
+            </ul>
+
+            <div class="panel__actions">
+              <a class="btn btn--primary btn--small" href="needs.html">Post a Need</a>
+              <a class="btn btn--ghost btn--small" href="capabilities.html">List Capability</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__bg"></div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>Platform functions (not just a repo)</h2>
+          <p class="muted">
+            Think of this as a “coordination cortex”: encode needs/capabilities in a shared format,
+            then connect, negotiate, and execute with trust.
+          </p>
+        </div>
+
+        <div class="grid3">
+          <div class="card">
+            <h3>Needs Marketplace</h3>
+            <p class="muted">Post technical asks: chips, algorithms, sensors, data pipelines, clinical studies, manufacturing.</p>
+            <a class="link" href="needs.html">Explore Needs →</a>
+          </div>
+          <div class="card">
+            <h3>Capability Directory</h3>
+            <p class="muted">List what you can deliver, with evidence: publications, tape-outs, benchmarks, certifications.</p>
+            <a class="link" href="capabilities.html">Explore Capabilities →</a>
+          </div>
+          <div class="card">
+            <h3>Collaboration Workflow</h3>
+            <p class="muted">Standardized scopes, milestones, risk flags, and handoff—so projects don’t stall.</p>
+            <a class="link" href="collaboration.html">See Workflow →</a>
+          </div>
+          <div class="card">
+            <h3>Governance & Ethics</h3>
+            <p class="muted">Clear boundaries: safety, consent, dual-use awareness, data integrity, review processes.</p>
+            <a class="link" href="governance.html">Read Governance →</a>
+          </div>
+          <div class="card">
+            <h3>Open Core</h3>
+            <p class="muted">Public specs and templates; community contributions; reproducibility first.</p>
+            <a class="link" href="#open">Open assets →</a>
+          </div>
+          <div class="card">
+            <h3>Sustainable Business</h3>
+            <p class="muted">LinkedIn-like model: free access + paid discovery, verification, and recruiting.</p>
+            <a class="link" href="#biz">Revenue model →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="section section--alt">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>How it works</h2>
+          <p class="muted">A simple loop: encode → match → collaborate → ship → feed back into shared knowledge.</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__n">1</div>
+            <div class="step__b">
+              <h3>Encode</h3>
+              <p class="muted">Use structured templates to describe needs/capabilities (constraints, deliverables, proof).</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__n">2</div>
+            <div class="step__b">
+              <h3>Match</h3>
+              <p class="muted">Find counterpart teams by domain: IC design, packaging, signal processing, clinical, manufacturing.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__n">3</div>
+            <div class="step__b">
+              <h3>Collaborate</h3>
+              <p class="muted">Spin up a project thread with milestones, roles, governance constraints, and escalation paths.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__n">4</div>
+            <div class="step__b">
+              <h3>Ship & share</h3>
+              <p class="muted">Publish non-sensitive learnings, specs, and postmortems—improving the network over time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="biz" class="section">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>LinkedIn-like business model (but builder-first)</h2>
+          <p class="muted">Keep the core open, monetize trust + discovery + workflow acceleration.</p>
+        </div>
+
+        <div class="grid3">
+          <div class="card">
+            <h3>Free</h3>
+            <ul class="bullets">
+              <li>Browse public needs/capabilities</li>
+              <li>Use open templates</li>
+              <li>Join community projects</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Pro</h3>
+            <ul class="bullets">
+              <li>Priority matchmaking & search filters</li>
+              <li>Verified profile badges (evidence-based)</li>
+              <li>Warm intros / messaging credits</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Org</h3>
+            <ul class="bullets">
+              <li>Talent & partner pipeline</li>
+              <li>Private project rooms</li>
+              <li>Compliance-ready documentation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="join" class="section section--alt">
+      <div class="wrap">
+        <div class="join">
+          <div>
+            <h2>Join the network</h2>
+            <p class="muted">
+              Start by posting either a Need or a Capability. Keep it specific; evidence builds trust.
+            </p>
+          </div>
+
+          <div class="join__actions">
+            <a class="btn btn--primary" href="needs.html">Post a Need</a>
+            <a class="btn btn--ghost" href="capabilities.html">List Capability</a>
+            <button class="btn btn--ghost" id="copyContact">Copy contact</button>
+          </div>
+
+          <div class="join__hint muted" id="copyHint" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="open" class="section">
+      <div class="wrap">
+        <div class="section__head">
+          <h2>Open assets</h2>
+          <p class="muted">
+            Put these in the repo over time: templates, checklists, verification rules, and case studies.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="split">
+            <div>
+              <h3>Recommended next commits</h3>
+              <ul class="bullets">
+                <li>Templates: Need / Capability / Collaboration Spec</li>
+                <li>Verification rubric (evidence types + scoring)</li>
+                <li>Ethics & safety checklist for BCI workflows</li>
+                <li>Demo case: “chip upgrade + packaging + testing”</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Repo link</h3>
+              <p class="muted">Keep code and docs open; the website is the front door.</p>
+              <a class="btn btn--ghost btn--small" href="https://github.com/zhouzixuan602-dev/zhouzixuan602-dev.github.io">View repository</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__left">
+        <div class="brand brand--small">
+          <span class="brand__mark"></span>
+          <span class="brand__name">Co-Prosper BCI Network</span>
+        </div>
+        <div class="muted">Open by default · Co-prosperity over competition · Built on GitHub Pages</div>
+      </div>
+      <div class="footer__right">
+        <a href="needs.html">Needs</a>
+        <a href="capabilities.html">Capabilities</a>
+        <a href="collaboration.html">Collaboration</a>
+        <a href="governance.html">Governance</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
