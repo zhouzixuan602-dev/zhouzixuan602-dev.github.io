@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Governance · Research Consortium Platform</title>
+  <meta name="description" content="Governance and ethics: data boundaries, consent, authorship norms, and conflict resolution." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{--bg:#0b0d12;--text:#e9ecf2;--muted:#aab2c0;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);--brand1:#7c3aed;--brand2:#22d3ee;--shadow:0 18px 60px rgba(0,0,0,.45);--radius:18px;--max:1080px;}
+    *{box-sizing:border-box;} html,body{height:100%;}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(900px 600px at 10% 10%, rgba(124,58,237,.18), transparent 55%),radial-gradient(900px 600px at 85% 20%, rgba(34,211,238,.14), transparent 55%),radial-gradient(700px 500px at 50% 95%, rgba(124,58,237,.10), transparent 55%),var(--bg);color:var(--text);line-height:1.6;}
+    a{color:inherit;text-decoration:none;}
+    .wrap{width:min(var(--max), calc(100% - 40px));margin:0 auto;}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(11,13,18,.55);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .topbar__inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;}
+    .brand{display:flex;align-items:center;gap:10px;min-width:220px;}
+    .brand__mark{width:14px;height:14px;border-radius:6px;background:linear-gradient(135deg,var(--brand1),var(--brand2));box-shadow:0 0 0 4px rgba(124,58,237,.15);}
+    .brand__name{font-weight:700;letter-spacing:.2px;font-size:.98rem;white-space:nowrap;}
+    .nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;}
+    .nav a{color:var(--muted);font-weight:600;font-size:.92rem;padding:8px 10px;border-radius:10px;border:1px solid transparent;transition:.18s ease;}
+    .nav a:hover{color:var(--text);background:rgba(255,255,255,.04);border-color:var(--line);}
+    .topbar__cta{display:flex;gap:10px;align-items:center;justify-content:flex-end;min-width:220px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border-radius:12px;font-weight:700;font-size:.92rem;border:1px solid var(--line2);background:rgba(255,255,255,.03);color:var(--text);transition:.18s ease;cursor:pointer;user-select:none;}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.05);}
+    .btn--primary{border:0;background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,211,238,.95));color:#071018;box-shadow:0 18px 45px rgba(124,58,237,.22);}
+    main{padding:28px 0 44px;}
+    .pageHead{border:1px solid var(--line);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;position:relative;overflow:hidden;}
+    .pageHead::before{content:"";position:absolute;inset:-2px;background:radial-gradient(700px 240px at 25% 0%, rgba(34,211,238,.22), transparent 55%),radial-gradient(700px 240px at 80% 0%, rgba(124,58,237,.22), transparent 55%);opacity:.55;pointer-events:none;}
+    .pageHead > *{position:relative;}
+    h1{margin:0 0 8px;font-size:2.0rem;letter-spacing:-.4px;line-height:1.15;}
+    .lead{margin:0;color:var(--muted);max-width:78ch;}
+    .panel{margin-top:14px;border:1px solid var(--line);background:rgba(17,21,34,.55);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .panel h2{margin:0 0 10px;font-size:1.15rem;}
+    .panel p{margin:0 0 10px;color:var(--muted);}
+    .panel ul{margin:0;padding-left:18px;color:var(--muted);}
+    .panel li{margin:8px 0;}
+    footer{padding:22px 0 46px;color:var(--muted);font-size:.9rem;}
+    .footerCard{border-top:1px solid var(--line);margin-top:22px;padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .footerLinks{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .footerLinks a{color:var(--muted);font-weight:700;padding:6px 8px;border-radius:10px;border:1px solid transparent;}
+    .footerLinks a:hover{color:var(--text);border-color:var(--line);background:rgba(255,255,255,.03);}
+    @media (max-width:920px){.brand,.topbar__cta{min-width:auto;} h1{font-size:1.75rem;}}
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="./contact.html" aria-label="Home">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span class="brand__name">Research Consortium Platform</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="./needs.html">Needs</a>
+        <a href="./capabilities.html">Capabilities</a>
+        <a href="./collaboration.html">Collaboration</a>
+        <a href="./governance.html">Governance</a>
+      </nav>
+
+      <div class="topbar__cta">
+        <a class="btn" href="./contact.html#how">How it works</a>
+        <a class="btn btn--primary" href="./contact.html#join">Join</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="pageHead">
+      <h1>Governance &amp; Ethics</h1>
+      <p class="lead">
+        Trust scales when rules are explicit. This module defines data boundaries, consent expectations,
+        authorship norms, and a lightweight way to resolve conflicts.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Minimum rules (start here)</h2>
+      <ul>
+        <li><b>Data boundary</b>: what can be shared, where, and under what license/NDA.</li>
+        <li><b>Consent &amp; safety</b>: human data, clinical workflows, and risk review triggers.</li>
+        <li><b>Authorship</b>: contribution tracking and acknowledgement expectations.</li>
+        <li><b>Conflict resolution</b>: escalation path + who decides + how it’s logged.</li>
+        <li><b>Long-term stewardship</b>: maintainers, continuity, and access control.</li>
+      </ul>
+      <p style="margin-top:12px;">
+        Source doc (optional, versioned plain-text):
+        <a class="btn" style="height:34px; padding:0 12px;" href="./governance.md">Open governance.md</a>
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Future-proofing (next iteration)</h2>
+      <p>
+        Once collaborations increase, consider adding: decision logs, a small review group, templates for
+        data-sharing agreements, and a public changelog of governance updates.
+      </p>
+    </section>
+
+    <footer>
+      <div class="footerCard">
+        <div><b>Open by default</b> · Co-development over competition · Built on GitHub Pages</div>
+        <div class="footerLinks">
+          <a href="./contact.html">Home</a>
+          <a href="./collaboration.html">Collaboration</a>
+          <a href="./capabilities.html">Capabilities</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
