@@ -1,328 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Needs · Research Consortium Platform</title>
-  <meta name="description" content="Post collaboration needs for an open neuroscience and BCI research consortium." />
+<meta charset="UTF-8" />
+<title>Needs Board · Research Consortium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d12;
+  --panel:#111522;
+  --panel2:#0f1320;
+  --text:#e9ecf2;
+  --muted:#aab2c0;
+  --line:rgba(255,255,255,.12);
+  --brand1:#7c3aed;
+  --brand2:#22d3ee;
+  --radius:16px;
+  --max:1200px;
+}
 
-  <style>
-    :root{
-      --bg:#0b0d12;
-      --panel:#111522;
-      --text:#e9ecf2;
-      --muted:#aab2c0;
-      --line:rgba(255,255,255,.12);
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background:radial-gradient(900px 600px at 10% 10%,rgba(124,58,237,.15),transparent 55%),
+             radial-gradient(900px 600px at 85% 20%,rgba(34,211,238,.12),transparent 55%),
+             var(--bg);
+  color:var(--text);
+}
 
-      --brand1:#7c3aed;
-      --brand2:#22d3ee;
+a{color:inherit;text-decoration:none}
+.wrap{width:min(var(--max),calc(100% - 40px));margin:0 auto}
 
-      --radius:16px;
-      --shadow:0 18px 60px rgba(0,0,0,.45);
-      --max:1080px;
-    }
+/* Topbar */
+.topbar{
+  position:sticky;top:0;z-index:10;
+  backdrop-filter:blur(10px);
+  background:rgba(11,13,18,.6);
+  border-bottom:1px solid var(--line);
+}
+.topbar__inner{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;gap:16px;
+}
+.brand{font-weight:800;letter-spacing:.3px}
+.nav{display:flex;gap:14px}
+.nav a{color:var(--muted);font-weight:600}
+.nav a.active{color:#fff}
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:
-        radial-gradient(800px 500px at 15% 10%, rgba(124,58,237,.16), transparent 55%),
-        radial-gradient(800px 500px at 85% 20%, rgba(34,211,238,.14), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      line-height:1.6;
-    }
+/* Page */
+.page{padding:28px 0}
+h1{margin:0 0 6px;font-size:2.2rem}
+.lead{color:var(--muted);max-width:70ch}
 
-    a{ color:inherit; text-decoration:none; }
-    .wrap{ width:min(var(--max), calc(100% - 40px)); margin:0 auto; }
+/* Controls */
+.controls{
+  display:grid;
+  grid-template-columns:1fr 180px 160px auto;
+  gap:10px;
+  margin:22px 0;
+}
+.controls input,.controls select,.controls button{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  color:var(--text);
+}
 
-    /* Topbar */
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:10;
-      backdrop-filter: blur(10px);
-      background:rgba(11,13,18,.55);
-      border-bottom:1px solid var(--line);
-    }
-    .topbar__inner{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding:14px 0;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:700;
-      white-space:nowrap;
-    }
-    .brand__mark{
-      width:14px;height:14px;border-radius:6px;
-      background:linear-gradient(135deg,var(--brand1),var(--brand2));
-      box-shadow:0 0 0 4px rgba(124,58,237,.18);
-    }
-    .nav{
-      display:flex;
-      gap:14px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-    .nav a{
-      color:var(--muted);
-      font-weight:600;
-      font-size:.92rem;
-      padding:6px 10px;
-      border-radius:10px;
-    }
-    .nav a:hover{
-      color:var(--text);
-      background:rgba(255,255,255,.05);
-    }
+/* Board */
+.board{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:20px;
+}
 
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:38px;
-      padding:0 14px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:.92rem;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-    }
-    .btn--primary{
-      border:0;
-      background:linear-gradient(135deg,var(--brand1),var(--brand2));
-      color:#071018;
-    }
+/* Post panel */
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+}
+.panel h3{margin:0 0 10px}
+.panel label{font-size:.9rem;color:var(--muted)}
+.panel input,.panel textarea{
+  width:100%;
+  margin-top:6px;
+  margin-bottom:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#0c1020;
+  border:1px solid var(--line);
+  color:var(--text);
+}
+.panel textarea{min-height:90px;resize:vertical}
 
-    /* Layout */
-    main{ padding:40px 0 60px; }
-    .grid{
-      display:grid;
-      grid-template-columns: 1.4fr .6fr;
-      gap:20px;
-      align-items:start;
-    }
+/* Feed */
+.feed{
+  display:grid;
+  gap:14px;
+}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+}
+.card h4{margin:0 0 6px}
+.meta{font-size:.85rem;color:var(--muted)}
+.tags{margin-top:8px}
+.tag{
+  display:inline-block;
+  font-size:.75rem;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  margin-right:6px;
+  color:var(--muted);
+}
 
-    /* Main card */
-    .card{
-      background:rgba(17,21,34,.55);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:26px;
-    }
-    h1{
-      margin:0 0 10px;
-      font-size:2rem;
-      letter-spacing:-.4px;
-    }
-    .lead{
-      margin:0 0 18px;
-      color:var(--muted);
-      max-width:65ch;
-    }
+/* Button */
+.btn{
+  cursor:pointer;
+  font-weight:700;
+}
+.btn.primary{
+  background:linear-gradient(135deg,var(--brand1),var(--brand2));
+  border:none;
+  color:#041018;
+}
 
-    .section{
-      margin-top:22px;
-    }
-    .section h2{
-      margin:0 0 8px;
-      font-size:1.2rem;
-    }
-    .section p{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:.95rem;
-    }
-    ul{
-      margin:0;
-      padding-left:18px;
-      color:var(--muted);
-      font-size:.95rem;
-    }
-    li{ margin:6px 0; }
-
-    /* Sidebar */
-    .side{
-      background:rgba(17,21,34,.55);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:20px;
-    }
-    .side h3{
-      margin:0 0 10px;
-      font-size:1.05rem;
-    }
-    .side p{
-      margin:0 0 14px;
-      color:var(--muted);
-      font-size:.93rem;
-    }
-    .side ol{
-      margin:0;
-      padding-left:18px;
-      color:var(--muted);
-      font-size:.92rem;
-    }
-    .side li{ margin:10px 0; }
-
-    .kbd{
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size:.82rem;
-      padding:2px 6px;
-      border-radius:8px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-    }
-
-    /* CTA */
-    .cta{
-      margin-top:24px;
-      padding:20px;
-      border-radius:var(--radius);
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(124,58,237,.22), rgba(34,211,238,.14));
-    }
-    .cta h3{ margin:0 0 6px; }
-    .cta p{ margin:0 0 12px; color:#eef; font-weight:600; }
-
-    /* Responsive */
-    @media (max-width:900px){
-      .grid{ grid-template-columns:1fr; }
-    }
-  </style>
+/* Responsive */
+@media(max-width:900px){
+  .board{grid-template-columns:1fr}
+  .controls{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="wrap topbar__inner">
-      <a class="brand" href="./contact.html">
-        <span class="brand__mark"></span>
-        Research Consortium Platform
-      </a>
 
-      <nav class="nav">
-        <a href="./needs.html">Needs</a>
-        <a href="./capabilities.md">Capabilities</a>
-        <a href="./collaboration.md">Collaboration</a>
-        <a href="./governance.md">Governance</a>
-      </nav>
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <div class="brand">Research Consortium Platform</div>
+    <nav class="nav">
+      <a class="active">Needs</a>
+      <a href="./capabilities.html">Capabilities</a>
+      <a href="./collaboration.html">Collaboration</a>
+      <a href="./governance.html">Governance</a>
+    </nav>
+  </div>
+</header>
 
-      <a class="btn btn--primary" href="#join">Join</a>
+<main class="wrap page">
+  <h1>Needs Board</h1>
+  <p class="lead">
+    Post collaboration needs in a structured way, then browse them as a shared board.
+    <b>Step 2.1:</b> static demo with local persistence.
+  </p>
+
+  <div class="controls">
+    <input id="search" placeholder="Search title / context..." />
+    <select id="tagFilter">
+      <option value="">All tags</option>
+      <option value="EEG">EEG</option>
+      <option value="BCI">BCI</option>
+      <option value="Dataset">Dataset</option>
+    </select>
+    <select id="sort">
+      <option value="new">Newest</option>
+      <option value="old">Oldest</option>
+    </select>
+    <button class="btn" onclick="addSample()">Add sample</button>
+  </div>
+
+  <section class="board">
+    <!-- Post -->
+    <div class="panel">
+      <h3>Post a Need</h3>
+
+      <label>Title (one sentence)</label>
+      <input id="title" placeholder="e.g. EEG dataset for SSVEP benchmark" />
+
+      <label>Outcome / Deliverable</label>
+      <textarea id="outcome" placeholder="What does success look like?"></textarea>
+
+      <label>Tags (comma separated)</label>
+      <input id="tags" placeholder="EEG, Dataset, SSVEP" />
+
+      <label>Availability / Response</label>
+      <input id="avail" placeholder="e.g. Reply in 48h, UTC+8" />
+
+      <button class="btn primary" onclick="postNeed()">Post</button>
     </div>
-  </header>
 
-  <main class="wrap">
-    <div class="grid">
-      <!-- Main content -->
-      <div class="card">
-        <h1>Post a Need</h1>
-        <p class="lead">
-          “Needs” are small, concrete collaboration requests.
-          Write them clearly and the network can match you faster.
-        </p>
-
-        <div class="section">
-          <h2>What belongs here</h2>
-          <ul>
-            <li>Technical help (analysis, modeling, hardware, software)</li>
-            <li>Access to data, equipment, participants, or labs</li>
-            <li>Short-term research or co-development tasks</li>
-            <li>Funding, validation, or deployment gaps</li>
-          </ul>
-        </div>
-
-        <div class="section">
-          <h2>Where needs live (current MVP)</h2>
-          <p>
-            For now, all needs are stored in a single open document:
-            <span class="kbd">needs.md</span>.
-            This keeps everything transparent, versioned, and auditable.
-          </p>
-
-          <p>
-            You can open the file, add a new section, and commit.
-          </p>
-
-          <p style="margin-top:10px;">
-            <a class="btn btn--primary" href="./needs.md">Open needs.md</a>
-            <a class="btn" href="https://github.com/zhouzixuan602-dev/zhouzixuan602-dev.github.io" target="_blank">
-              View repository
-            </a>
-          </p>
-        </div>
-
-        <section class="cta" id="join">
-          <h3>Submit via email (fallback)</h3>
-          <p>
-            If GitHub editing isn’t convenient, send a structured email and it will be added.
-          </p>
-          <a class="btn btn--primary"
-             href="mailto:zhouzixuan602@gmail.com?subject=Need%20Posted%20-%20Research%20Consortium&body=Title:%0AContext:%0AWhat%20I%20need:%0AWhat%20I%20offer:%0ATime%20window:%0AContact:">
-            Email this need
-          </a>
-        </section>
-      </div>
-
-      <!-- Sidebar -->
-      <aside class="side" aria-label="Need posting checklist">
-        <h3>Posting checklist (MVP)</h3>
-
-        <p>
-          Treat a need like an executable task, not a vague idea.
-        </p>
-
-        <ol>
-          <li>
-            <b>One-line title</b><br/>
-            <span class="kbd">Goal + context</span>
-          </li>
-
-          <li>
-            <b>Inputs / Outputs / Acceptance</b><br/>
-            <span class="kbd">Provide</span> → <span class="kbd">Need</span> → <span class="kbd">Done means…</span>
-          </li>
-
-          <li>
-            <b>Time window</b><br/>
-            Availability, urgency, async vs sync
-          </li>
-
-          <li>
-            <b>What you offer</b><br/>
-            Authorship, funding, data, compute, credit
-          </li>
-
-          <li>
-            <b>Next step</b><br/>
-            Email, GitHub issue, short call
-          </li>
-        </ol>
-
-        <p style="margin-top:14px;">
-          <b>Flow:</b> draft → add to <span class="kbd">needs.md</span> → commit → visible
-        </p>
-
-        <p style="margin-top:10px; color:var(--muted); font-size:.92rem;">
-          Next: this will evolve into a structured form,
-          while remaining open and versioned.
-        </p>
-      </aside>
+    <!-- Feed -->
+    <div>
+      <div class="meta" id="count"></div>
+      <div class="feed" id="feed"></div>
     </div>
-  </main>
+  </section>
+</main>
+
+<script>
+const KEY="needs-board";
+
+function load(){
+  return JSON.parse(localStorage.getItem(KEY)||"[]");
+}
+function save(d){
+  localStorage.setItem(KEY,JSON.stringify(d));
+}
+function render(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const tag=document.getElementById("tagFilter").value;
+  const sort=document.getElementById("sort").value;
+  let data=load();
+
+  if(q) data=data.filter(n=>n.title.toLowerCase().includes(q)||n.outcome.toLowerCase().includes(q));
+  if(tag) data=data.filter(n=>n.tags.includes(tag));
+  if(sort==="new") data=data.reverse();
+
+  document.getElementById("count").innerText=`${data.length} posts`;
+  document.getElementById("feed").innerHTML=data.map(n=>`
+    <div class="card">
+      <h4>${n.title}</h4>
+      <div class="meta">${n.outcome}</div>
+      <div class="meta">Avail: ${n.avail||"-"}</div>
+      <div class="tags">${n.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}</div>
+    </div>
+  `).join("");
+}
+
+function postNeed(){
+  const n={
+    title:title.value,
+    outcome:outcome.value,
+    tags:tags.value.split(",").map(t=>t.trim()).filter(Boolean),
+    avail:avail.value,
+    ts:Date.now()
+  };
+  if(!n.title) return alert("Title required");
+  const d=load(); d.push(n); save(d); render();
+  title.value=outcome.value=tags.value=avail.value="";
+}
+
+function addSample(){
+  const d=load();
+  d.push({
+    title:"Need: EEG dataset for SSVEP benchmark (500+ subjects)",
+    outcome:"Reproducible benchmark + baseline results",
+    tags:["EEG","Dataset","SSVEP"],
+    avail:"Reply in 48h, UTC+8",
+    ts:Date.now()
+  });
+  save(d); render();
+}
+
+["search","tagFilter","sort"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",render);
+});
+render();
+</script>
+
 </body>
 </html>
