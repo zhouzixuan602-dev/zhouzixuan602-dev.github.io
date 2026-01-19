@@ -1046,7 +1046,7 @@
     }
     del.onclick = async () => {
       if(!confirm("Delete this post from THIS browser?")) return;
-      const posts = load().filter(p => p.id !== post.id);
+      const posts = (await load()).filter(p => p.id !== post.id);
       await save(posts);
       closeModal();
       render();
