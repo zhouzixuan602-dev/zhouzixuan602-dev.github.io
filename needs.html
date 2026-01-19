@@ -758,7 +758,22 @@
       .filter(Boolean)
       .slice(0, 10);
   }
+// ===== 2.3B-1: Need → Vector =====
+function computeNeedVector(post){
+  return {
+    domain: post.task_model?.domain ?? "unknown",
 
+    modality: new Set(post.task_model?.modality ?? []),
+
+    roles: new Set(post.collaboration_mode?.roles_needed ?? []),
+
+    artifacts: new Set(post.outcome_structured?.artifacts ?? []),
+
+    metrics: new Set(post.outcome_structured?.metrics ?? []),
+
+    time_pressure: post.time_model?.urgency ?? "low",
+  };
+}
   function setCoverPreview(dataUrl){
     coverDataUrl = dataUrl || "";
     if(!coverDataUrl){
@@ -940,6 +955,9 @@
   }
 
   function card(post){
+    const vector = computeNeedVector(post);
+    console.log("Need vector:", vector);
+    
     const div = document.createElement("div");
     div.className = "post";
 
