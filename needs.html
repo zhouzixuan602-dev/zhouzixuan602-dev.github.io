@@ -825,60 +825,61 @@
   }
 
   async function publish(){
-    const msg = validate();
-    if(msg){ alert(msg); return; }
+  const msg = validate();
+  if(msg){ alert(msg); return; }
 
-    const posts = await load();
-    const post = {
-      id: uid(),
-      createdAt: nowISO(),
-      title: f.title.value.trim(),
-      outcome: f.outcome.value.trim(),
-      deadline: f.deadline.value.trim(),
-      window: f.window.value.trim(),
-      context: f.context.value.trim(),
-      need: f.need.value.trim(),
-      offer: f.offer.value.trim(),
-      tags: normalizeTags(f.tags.value),
-      contact: f.contact.value.trim(),
-      cover: coverDataUrl,
-      // ===== 2.3A ADDITIONS =====
+  // ① 读取已有 posts
+  const posts = await load();
 
+  // ② 派生当前 Need 的 tags（只能在这里算）
   const tags = normalizeTags(f.tags.value);
 
-task_model: {
-  domain: "neural_decoding",
-  modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
-  task_type: ["benchmark"],
-  target_level: "population",
-},
+  // ③ 构造 Need（2.3A schema）
+  const post = {
+    id: uid(),
+    createdAt: nowISO(),
+    title: f.title.value.trim(),
+    outcome: f.outcome.value.trim(),
+    deadline: f.deadline.value.trim(),
+    window: f.window.value.trim(),
+    context: f.context.value.trim(),
+    need: f.need.value.trim(),
+    offer: f.offer.value.trim(),
+    tags,                              // ✅ 只用这一份
+    contact: f.contact.value.trim(),
+    cover: coverDataUrl,
 
+    // ===== 2.3A ADDITIONS =====
+    task_model: {
+      domain: "neural_decoding",
+      modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+      task_type: ["benchmark"],
+      target_level: "population",
+    },
 
-  outcome_structured: {
-    artifacts: ["dataset", "code"],  
-    metrics: ["accuracy", "ITR"],    
-    reproducibility: "cross-lab",    
-  },
+    outcome_structured: {
+      artifacts: ["dataset","code"],
+      metrics: ["accuracy","ITR"],
+      reproducibility: "cross-lab",
+    },
 
-  collaboration_mode: {
-    roles_needed: [
-      "data_provider",
-      "method_partner",
-      "replication_lab"
-    ],
-    coordination: "async",           
-  },
+    collaboration_mode: {
+      roles_needed: ["data_provider","method_partner","replication_lab"],
+      coordination: "async",
+    },
 
-  time_model: {
-    urgency: "medium",               
-    expected_duration_weeks: 8,      
-  },
-}; 
-    
-    posts.unshift(post);
-    await save(posts);
-    resetForm(false);
-    render();
+    time_model: {
+      urgency: "medium",
+      expected_duration_weeks: 8,
+    },
+  };
+
+  posts.unshift(post);
+  await save(posts);
+  resetForm(false);
+  render();
+}
+
     // jump to browse area on mobile
     document
       .getElementById("browse")
