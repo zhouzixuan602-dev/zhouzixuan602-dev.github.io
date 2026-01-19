@@ -559,7 +559,7 @@
           <span style="color:var(--muted); font-weight:700; font-size:.86rem;">Saved locally (Step 2.1)</span>
         </div>
         <div class="inner">
-          <div class="help"
+          <div class="help">
             把信息写得像“可执行任务”，就会更容易匹配到人：<span class="kbd">输入</span> / <span class="kbd">输出</span> / <span class="kbd">验收标准</span>
           </div>
           <ol class="checklist">
@@ -668,8 +668,6 @@
     </div>
   </div>
 
-  };
-
 <script>
   // --- Step 2.1 storage key (local only) ---
   const KEY = "rcp_needs_board_v1";
@@ -684,7 +682,7 @@
   const sortByEl = el("sortBy");
 
   // Form fields
-  const f = { ... }
+  const f = {
     title: el("f_title"),
     outcome: el("f_outcome"),
     deadline: el("f_deadline"),
