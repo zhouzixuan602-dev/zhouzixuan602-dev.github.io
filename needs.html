@@ -488,15 +488,20 @@
 
 
 <script>
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "XXXX",
-    appId: "XXXX"
-  };
+  
+const firebaseConfig = {
+  apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
+  authDomain: "research-consortium-136f7.firebaseapp.com",
+  projectId: "research-consortium-136f7",
+  storageBucket: "research-consortium-136f7.firebasestorage.app",
+  messagingSenderId: "423748170210",
+  appId: "1:423748170210:web:77b4a04db5dd01135849bb",
+  measurementId: "G-G5N1DLFGHW"
+};
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const COL = "needs_board_posts";
@@ -670,7 +675,12 @@
 
 <script>
   console.log("SCRIPT START");
-  // --- Step 2.1 storage key (local only) ---
+
+  // ====== Firebase (make sure you filled firebaseConfig above) ======
+  const COL = "needs_board_posts";
+  const colRef = firebase.firestore().collection(COL);
+
+  // --- Step 2.1 local cache key (optional but useful) ---
   const KEY = "rcp_needs_board_v1";
 
   // Elements
@@ -697,60 +707,11 @@
     coverPreview: el("coverPreview"),
     clearCover: el("clearCover"),
   };
+
   let coverDataUrl = "";
+  let ALL_POSTS = []; // in-memory source of truth for rendering
 
-  function nowISO(){
-    return new Date().toISOString();
-  }
-
-  async function load(){
-  let local = [];
-
-  // 1. 本地读取
-  try {
-    local = JSON.parse(localStorage.getItem(KEY) || "[]");
-  } catch (e) {
-    local = [];
-  }
-
-  // 2. 远端读取（失败不影响）
-  try {
-    const res = await fetch("/api/needs");
-    if (res.ok) {
-      const remote = await res.json();
-      if (Array.isArray(remote) && remote.length > 0) {
-        localStorage.setItem(KEY, JSON.stringify(remote));
-        return remote;
-      }
-    }
-  } catch (e) {
-    // 静默失败
-  }
-
-  return local;
-}
-
-
-  async function save(posts){
-  // 1. 先本地保存（立刻生效）
-  localStorage.setItem(KEY, JSON.stringify(posts));
-
-  // 2. 再异步推送远端
-  try{
-    await fetch("/api/needs", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    updatedAt: nowISO(),
-    posts: posts
-  })
-});
-
-  }catch(e){
-    // 离线 / 失败不影响本地体验
-  }
-}
-
+  function nowISO(){ return new Date().toISOString(); }
 
   function uid(){
     return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
@@ -763,64 +724,6 @@
       .filter(Boolean)
       .slice(0, 10);
   }
-
-  function computeNeedInference(post){
-  const inferred = {};
-
-  // 1️⃣ domain：极弱规则
-  if (
-    /EEG|SSVEP|BCI|neural|decoding/i.test(
-      [post.title, post.context, post.need].join(" ")
-    )
-  ) {
-    inferred.task_model = {
-      domain: "neural_decoding"
-    };
-  }
-
-  // 2️⃣ modality：只从 tags 推断（不读正文）
-  if (post.tags && post.tags.length) {
-    const modality = post.tags.filter(t =>
-      ["EEG","Ca","spike","fNIRS"].includes(t)
-    );
-    if (modality.length) {
-      inferred.task_model = {
-        ...(inferred.task_model || {}),
-        modality
-      };
-    }
-  }
-
-  // 3️⃣ roles：关键词级（非常保守）
-  if (/dataset|data provider/i.test(post.need)) {
-    inferred.collaboration_mode = {
-      roles_needed: ["data_provider"]
-    };
-  }
-
-  return inferred;
-}
-// ===== 2.3B-1: Need → Vector =====
-function computeNeedVector(post) {
-  const inferred = post._system?.inferred ?? {};
-
-  const vec = {
-    domain: inferred.task_model?.domain ?? "unknown",
-
-    modality: new Set(inferred.task_model?.modality ?? []),
-
-    roles: new Set(inferred.collaboration_mode?.roles_needed ?? []),
-
-    artifacts: new Set(inferred.outcome_structured?.artifacts ?? []),
-
-    metrics: new Set(inferred.outcome_structured?.metrics ?? []),
-
-    time_pressure: inferred.time_model?.urgency ?? "low",
-  };
-
-  console.log("Need vector:", vec);
-  return vec;
-}
 
   function setCoverPreview(dataUrl){
     coverDataUrl = dataUrl || "";
@@ -835,7 +738,7 @@ function computeNeedVector(post) {
     f.coverPreview.appendChild(img);
   }
 
-  // Basic image compression to keep localStorage from exploding
+  // Basic image compression
   function compressImage(file, maxW=1200, quality=0.82){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -850,8 +753,7 @@ function computeNeedVector(post) {
           canvas.width = w; canvas.height = h;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, w, h);
-          const out = canvas.toDataURL("image/jpeg", quality);
-          resolve(out);
+          resolve(canvas.toDataURL("image/jpeg", quality));
         };
         img.onerror = reject;
         img.src = reader.result;
@@ -863,7 +765,7 @@ function computeNeedVector(post) {
 
   f.cover.addEventListener("change", async (e) => {
     const file = e.target.files && e.target.files[0];
-    if(!file){ return; }
+    if(!file) return;
     try{
       const dataUrl = await compressImage(file);
       setCoverPreview(dataUrl);
@@ -887,126 +789,42 @@ function computeNeedVector(post) {
     return "";
   }
 
-  async function publish(){
-  const msg = validate();
-  if(msg){ alert(msg); return; }
+  // ===== 2.3B: inference (very conservative demo) =====
+  function computeNeedInference(post){
+    const inferred = {};
 
-  // ① 读取已有 posts
-  const posts = await load();
+    // domain: weak heuristic
+    if (/EEG|SSVEP|BCI|neural|decoding/i.test([post.title, post.context, post.need].join(" "))){
+      inferred.task_model = { domain: "neural_decoding" };
+    }
 
-  // ② 派生当前 Need 的 tags（只能在这里算）
-  const tags = normalizeTags(f.tags.value);
+    // modality: ONLY from tags
+    if (post.tags && post.tags.length){
+      const modality = post.tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t));
+      if (modality.length){
+        inferred.task_model = { ...(inferred.task_model || {}), modality };
+      }
+    }
 
-  // ③ 构造 Need（2.3A schema）
-  const post = {
-    id: uid(),
-    createdAt: nowISO(),
-    title: f.title.value.trim(),
-    outcome: f.outcome.value.trim(),
-    deadline: f.deadline.value.trim(),
-    window: f.window.value.trim(),
-    context: f.context.value.trim(),
-    need: f.need.value.trim(),
-    offer: f.offer.value.trim(),
-    tags,                              // ✅ 只用这一份
-    contact: f.contact.value.trim(),
-    cover: coverDataUrl,
+    // roles: keyword-level (super conservative)
+    if (/dataset|data provider/i.test(post.need)){
+      inferred.collaboration_mode = { roles_needed: ["data_provider"] };
+    }
 
-    // ===== 系统推断的（允许为空）=====
-  _system: {
-    inferred: {
-      task_model: {
-        domain: "neural_decoding",
-        modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
-        task_type: ["benchmark"],
-        target_level: "population",
-      },
-
-      outcome_structured: {
-        artifacts: ["dataset","code"],
-        metrics: ["accuracy","ITR"],
-        reproducibility: "cross-lab",
-      },
-
-      collaboration_mode: {
-        roles_needed: ["data_provider","method_partner","replication_lab"],
-        coordination: "async",
-      },
-
-      time_model: {
-        urgency: "medium",
-        expected_duration_weeks: 8,
-      },
-    },
-
-    confidence: 0.2
+    return inferred;
   }
-};
-    task_model: {
-      domain: "neural_decoding",
 
-      modality: tags.filter(t =>
-        ["EEG", "Ca", "spike", "fNIRS"].includes(t)
-      ),
-
-      task_type: ["benchmark"],
-      target_level: "population",
-    },
-
-    outcome_structured: {
-      artifacts: ["dataset", "code"],
-      metrics: ["accuracy", "ITR"],
-      reproducibility: "cross-lab",
-    },
-
-    collaboration_mode: {
-      roles_needed: [
-        "data_provider",
-        "method_partner",
-        "replication_lab"
-    ],
-    coordination: "async",
-  },
-
-  time_model: {
-    urgency: "medium",
-    expected_duration_weeks: 8,
-  },
-
-    // ===== 2.3A ADDITIONS =====
-    task_model: {
-      domain: "neural_decoding",
-      modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
-      task_type: ["benchmark"],
-      target_level: "population",
-    },
-
-    outcome_structured: {
-      artifacts: ["dataset","code"],
-      metrics: ["accuracy","ITR"],
-      reproducibility: "cross-lab",
-    },
-
-    collaboration_mode: {
-      roles_needed: ["data_provider","method_partner","replication_lab"],
-      coordination: "async",
-    },
-
-    time_model: {
-      urgency: "medium",
-      expected_duration_weeks: 8,
-    },
-  };
-
-  posts.unshift(post);
-  await save(posts);
-  resetForm(false);
-  render();
-
-    // jump to browse area on mobile
-    document
-      .getElementById("browse")
-      .scrollIntoView({behavior:"smooth", block:"start"});
+  function computeNeedVector(post) {
+    const inferred = post._system?.inferred ?? {};
+    const vec = {
+      domain: inferred.task_model?.domain ?? "unknown",
+      modality: new Set(inferred.task_model?.modality ?? []),
+      roles: new Set(inferred.collaboration_mode?.roles_needed ?? []),
+      artifacts: new Set(inferred.outcome_structured?.artifacts ?? []),
+      metrics: new Set(inferred.outcome_structured?.metrics ?? []),
+      time_pressure: inferred.time_model?.urgency ?? "low",
+    };
+    return vec;
   }
 
   function resetForm(clearCoverAlso=true){
@@ -1023,12 +841,6 @@ function computeNeedVector(post) {
       f.cover.value = "";
       setCoverPreview("");
     }
-  }
-
-  function clearAll(){
-    if(!confirm("Clear ALL local posts on this browser?")) return;
-    save([]);
-    render();
   }
 
   function formatTime(iso){
@@ -1057,17 +869,16 @@ function computeNeedVector(post) {
       opt.textContent = t;
       tagFilterEl.appendChild(opt);
     });
-    // restore
     if(current && Array.from(tags).includes(current)){
       tagFilterEl.value = current;
     }
   }
 
   function card(post){
-    console.log("render post:", post);
+    // You can inspect vector in console if needed
     const vector = computeNeedVector(post);
     console.log("Need vector:", vector);
-    
+
     const div = document.createElement("div");
     div.className = "post";
 
@@ -1162,22 +973,25 @@ function computeNeedVector(post) {
     back.style.display = "flex";
     back.setAttribute("aria-hidden", "false");
 
-    // add delete button (local ownership not tracked; still useful for your own browser)
+    // delete button (now deletes from Firestore)
     const top = back.querySelector(".modalTop");
     let del = document.getElementById("m_del");
     if(!del){
       del = document.createElement("span");
       del.id = "m_del";
       del.className = "btn mini btn--danger";
-      del.textContent = "Delete (local)";
+      del.textContent = "Delete";
       top.querySelector("div").insertBefore(del, top.querySelector("div").firstChild);
     }
+
     del.onclick = async () => {
-      if(!confirm("Delete this post from THIS browser?")) return;
-      const posts = (await load()).filter(p => p.id !== post.id);
-      await save(posts);
-      closeModal();
-      render();
+      if(!confirm("Delete this post from the shared board?")) return;
+      try{
+        await colRef.doc(post.id).delete();
+        closeModal();
+      }catch(e){
+        alert("Delete failed. Check Firestore rules / network.");
+      }
     };
   }
 
@@ -1192,8 +1006,8 @@ function computeNeedVector(post) {
     if(e.target === el("modalBack")) closeModal();
   });
 
-  async function render(){
-    let posts = await load();
+  function renderFromMemory(){
+    let posts = ALL_POSTS.slice();
 
     // controls
     renderTagOptions(posts);
@@ -1209,79 +1023,195 @@ function computeNeedVector(post) {
     // sort
     const s = sortByEl.value;
     if(s === "old"){
-      posts = posts.slice().sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
+      posts.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
     }else if(s === "az"){
-      posts = posts.slice().sort((a,b)=> (a.title||"").localeCompare(b.title||""));
+      posts.sort((a,b)=> (a.title||"").localeCompare(b.title||""));
     }else{
-      posts = posts.slice().sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+      posts.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
     }
 
-    // render
     listEl.innerHTML = "";
     posts.forEach(p => listEl.appendChild(card(p)));
     emptyEl.style.display = posts.length ? "none" : "block";
     countEl.textContent = posts.length + " posts";
   }
 
-  // Events
+  async function publish(){
+    const msg = validate();
+    if(msg){ alert(msg); return; }
+
+    const tags = normalizeTags(f.tags.value);
+
+    // 2.3A base post
+    const base = {
+      id: uid(),
+      createdAt: nowISO(),
+      title: f.title.value.trim(),
+      outcome: f.outcome.value.trim(),
+      deadline: f.deadline.value.trim(),
+      window: f.window.value.trim(),
+      context: f.context.value.trim(),
+      need: f.need.value.trim(),
+      offer: f.offer.value.trim(),
+      tags,
+      contact: f.contact.value.trim(),
+      cover: coverDataUrl,
+    };
+
+    // system inference (optional)
+    const inferred = computeNeedInference(base);
+
+    const post = {
+      ...base,
+
+      // explicit schema (optional now; helpful later)
+      task_model: {
+        domain: inferred.task_model?.domain ?? "unknown",
+        modality: inferred.task_model?.modality ?? tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+        task_type: ["benchmark"],
+        target_level: "population",
+      },
+      outcome_structured: {
+        artifacts: ["dataset","code"],
+        metrics: ["accuracy","ITR"],
+        reproducibility: "cross-lab",
+      },
+      collaboration_mode: {
+        roles_needed: inferred.collaboration_mode?.roles_needed ?? [],
+        coordination: "async",
+      },
+      time_model: {
+        urgency: "medium",
+        expected_duration_weeks: 8,
+      },
+
+      _system: {
+        inferred: inferred,
+        confidence: 0.2
+      }
+    };
+
+    try{
+      // Use post.id as doc id so delete is easy
+      await colRef.doc(post.id).set(post, { merge: true });
+      resetForm(false);
+
+      document.getElementById("browse")
+        .scrollIntoView({behavior:"smooth", block:"start"});
+    }catch(e){
+      alert("Publish failed. Check Firestore rules / config.");
+      console.error(e);
+    }
+  }
+
+  async function seedSample(){
+    const tags = ["EEG","SSVEP","dataset","benchmark"];
+    const base = {
+      id: uid(),
+      createdAt: nowISO(),
+      title: "Need: EEG dataset for SSVEP benchmark (500+ subjects)",
+      outcome: "Deliverable: reproducible benchmark set + baseline model results",
+      deadline: "2026-03-15",
+      window: "Reply in 48h, UTC+8 afternoons",
+      context: "We’re building a cross-lab SSVEP benchmarking suite. Current status: pilot dataset (n=40). Need a larger dataset or partners with access.\nConstraints: device type, sampling rate, and subject metadata availability.",
+      need: "- Dataset access (EEG SSVEP)\n- Advice on IRB/data sharing\n- Validation / baseline pipelines",
+      offer: "- Authorship / acknowledgement\n- Compute credits + co-dev support\n- Shared benchmarking code + docs",
+      tags,
+      contact: "name@email.com",
+      cover: "",
+    };
+
+    const inferred = computeNeedInference(base);
+
+    const post = {
+      ...base,
+      task_model: {
+        domain: inferred.task_model?.domain ?? "neural_decoding",
+        modality: inferred.task_model?.modality ?? ["EEG"],
+        task_type: ["benchmark"],
+        target_level: "population",
+      },
+      outcome_structured: {
+        artifacts: ["dataset","code"],
+        metrics: ["accuracy","ITR"],
+        reproducibility: "cross-lab",
+      },
+      collaboration_mode: {
+        roles_needed: inferred.collaboration_mode?.roles_needed ?? ["data_provider"],
+        coordination: "async",
+      },
+      time_model: {
+        urgency: "medium",
+        expected_duration_weeks: 8,
+      },
+      _system: { inferred, confidence: 0.2 }
+    };
+
+    try{
+      await colRef.doc(post.id).set(post, { merge: true });
+    }catch(e){
+      alert("Seed failed. Check Firestore rules / config.");
+      console.error(e);
+    }
+  }
+
+  async function clearAll(){
+    if(!confirm("Danger: delete ALL posts from the shared board?")) return;
+
+    // Batch delete (client-side)
+    try{
+      const snap = await colRef.get();
+      const batch = firebase.firestore().batch();
+      snap.forEach(doc => batch.delete(doc.ref));
+      await batch.commit();
+    }catch(e){
+      alert("Clear failed. Check Firestore rules / network.");
+      console.error(e);
+    }
+  }
+
+  // Controls
   el("publish").addEventListener("click", publish);
   el("reset").addEventListener("click", () => resetForm(true));
   el("clearAll").addEventListener("click", clearAll);
 
-  qEl.addEventListener("input", render);
-  tagFilterEl.addEventListener("change", render);
-  sortByEl.addEventListener("change", render);
+  qEl.addEventListener("input", renderFromMemory);
+  tagFilterEl.addEventListener("change", renderFromMemory);
+  sortByEl.addEventListener("change", renderFromMemory);
 
-  el("seedBtn").addEventListener("click", async () => {
-    const posts = await load();
-   const tags = ["EEG","SSVEP","dataset","benchmark"];
+  el("seedBtn").addEventListener("click", seedSample);
 
-posts.unshift({
-  id: uid(),
-  createdAt: nowISO(),
-  title: "Need: EEG dataset for SSVEP benchmark (500+ subjects)",
-  outcome: "Deliverable: reproducible benchmark set + baseline model results",
-  deadline: "2026-03-15",
-  window: "Reply in 48h, UTC+8 afternoons",
-  context: "We’re building a cross-lab SSVEP benchmarking suite. Current status: pilot dataset (n=40). Need a larger dataset or partners with access.\nConstraints: device type, sampling rate, and subject metadata availability.",
-  need: "- Dataset access (EEG SSVEP)\n- Advice on IRB/data sharing\n- Validation / baseline pipelines",
-  offer: "- Authorship / acknowledgement\n- Compute credits + co-dev support\n- Shared benchmarking code + docs",
-  tags,
-  contact: "zhouzixuan602@gmail.com",
-  cover: "",
+  // ====== Live sync from Firestore ======
+  function startRealtime(){
+    // optional: load local cache immediately (fast first paint)
+    try{
+      const cached = JSON.parse(localStorage.getItem(KEY) || "[]");
+      if(Array.isArray(cached) && cached.length){
+        ALL_POSTS = cached;
+        renderFromMemory();
+      }
+    }catch(e){}
 
-  // ===== 2.3A ADDITIONS (seed) =====
-  task_model: {
-    domain: "neural_decoding",
-    modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
-    task_type: ["benchmark"],
-    target_level: "population",
-  },
+    // realtime listener
+    colRef.orderBy("createdAt", "desc").onSnapshot((snap) => {
+      const posts = [];
+      snap.forEach(doc => posts.push(doc.data()));
+      ALL_POSTS = posts;
 
-  outcome_structured: {
-    artifacts: ["dataset","code"],
-    metrics: ["accuracy","ITR"],
-    reproducibility: "cross-lab",
-  },
+      // update local cache (like a short-term memory trace)
+      try{ localStorage.setItem(KEY, JSON.stringify(posts)); }catch(e){}
 
-  collaboration_mode: {
-    roles_needed: ["data_provider","method_partner","replication_lab"],
-    coordination: "async",
-  },
-
-  time_model: {
-    urgency: "medium",
-    expected_duration_weeks: 8,
-  },
-});
-
-    await save(posts);
-    render();
-  });
+      renderFromMemory();
+    }, (err) => {
+      console.error(err);
+      // fallback: keep local cache view
+      alert("Realtime sync failed. Check Firestore config/rules.");
+    });
+  }
 
   // Init
   setCoverPreview("");
-  render();
+  startRealtime();
 </script>
 </body>
 </html>
