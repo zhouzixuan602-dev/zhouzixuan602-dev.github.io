@@ -763,24 +763,65 @@
       .filter(Boolean)
       .slice(0, 10);
   }
+
+  function computeNeedInference(post){
+  const inferred = {};
+
+  // 1️⃣ domain：极弱规则
+  if (
+    /EEG|SSVEP|BCI|neural|decoding/i.test(
+      [post.title, post.context, post.need].join(" ")
+    )
+  ) {
+    inferred.task_model = {
+      domain: "neural_decoding"
+    };
+  }
+
+  // 2️⃣ modality：只从 tags 推断（不读正文）
+  if (post.tags && post.tags.length) {
+    const modality = post.tags.filter(t =>
+      ["EEG","Ca","spike","fNIRS"].includes(t)
+    );
+    if (modality.length) {
+      inferred.task_model = {
+        ...(inferred.task_model || {}),
+        modality
+      };
+    }
+  }
+
+  // 3️⃣ roles：关键词级（非常保守）
+  if (/dataset|data provider/i.test(post.need)) {
+    inferred.collaboration_mode = {
+      roles_needed: ["data_provider"]
+    };
+  }
+
+  return inferred;
+}
 // ===== 2.3B-1: Need → Vector =====
-function computeNeedVector(post){
-  return {
-    domain: post.task_model?.domain ?? "unknown",
+function computeNeedVector(post) {
+  const inferred = post._system?.inferred ?? {};
 
-    modality: new Set(post.task_model?.modality ?? []),
+  const vec = {
+    domain: inferred.task_model?.domain ?? "unknown",
 
-    roles: new Set(post.collaboration_mode?.roles_needed ?? []),
+    modality: new Set(inferred.task_model?.modality ?? []),
 
-    artifacts: new Set(post.outcome_structured?.artifacts ?? []),
+    roles: new Set(inferred.collaboration_mode?.roles_needed ?? []),
 
-    metrics: new Set(post.outcome_structured?.metrics ?? []),
+    artifacts: new Set(inferred.outcome_structured?.artifacts ?? []),
 
-    time_pressure: post.time_model?.urgency ?? "low",
+    metrics: new Set(inferred.outcome_structured?.metrics ?? []),
+
+    time_pressure: inferred.time_model?.urgency ?? "low",
   };
-  console.log("Need vector:", vec);   
+
+  console.log("Need vector:", vec);
   return vec;
 }
+
   function setCoverPreview(dataUrl){
     coverDataUrl = dataUrl || "";
     if(!coverDataUrl){
@@ -870,6 +911,67 @@ function computeNeedVector(post){
     tags,                              // ✅ 只用这一份
     contact: f.contact.value.trim(),
     cover: coverDataUrl,
+
+    // ===== 系统推断的（允许为空）=====
+  _system: {
+    inferred: {
+      task_model: {
+        domain: "neural_decoding",
+        modality: tags.filter(t => ["EEG","Ca","spike","fNIRS"].includes(t)),
+        task_type: ["benchmark"],
+        target_level: "population",
+      },
+
+      outcome_structured: {
+        artifacts: ["dataset","code"],
+        metrics: ["accuracy","ITR"],
+        reproducibility: "cross-lab",
+      },
+
+      collaboration_mode: {
+        roles_needed: ["data_provider","method_partner","replication_lab"],
+        coordination: "async",
+      },
+
+      time_model: {
+        urgency: "medium",
+        expected_duration_weeks: 8,
+      },
+    },
+
+    confidence: 0.2
+  }
+};
+    task_model: {
+      domain: "neural_decoding",
+
+      modality: tags.filter(t =>
+        ["EEG", "Ca", "spike", "fNIRS"].includes(t)
+      ),
+
+      task_type: ["benchmark"],
+      target_level: "population",
+    },
+
+    outcome_structured: {
+      artifacts: ["dataset", "code"],
+      metrics: ["accuracy", "ITR"],
+      reproducibility: "cross-lab",
+    },
+
+    collaboration_mode: {
+      roles_needed: [
+        "data_provider",
+        "method_partner",
+        "replication_lab"
+    ],
+    coordination: "async",
+  },
+
+  time_model: {
+    urgency: "medium",
+    expected_duration_weeks: 8,
+  },
 
     // ===== 2.3A ADDITIONS =====
     task_model: {
