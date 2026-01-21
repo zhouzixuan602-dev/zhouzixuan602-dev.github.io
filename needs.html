@@ -486,7 +486,23 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+<script>
+  // ===== Firebase config =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
+    authDomain: "research-consortium-136f7.firebaseapp.com",
+    projectId: "research-consortium-136f7",
+    storageBucket: "research-consortium-136f7.appspot.com",
+    messagingSenderId: "423748170210",
+    appId: "1:423748170210:web:77b4a04db5dd01135849bb"
+  };
 
+  // ===== Init Firebase (compat mode) =====
+  firebase.initializeApp(firebaseConfig);
+
+  // ===== Firestore =====
+  const COL = "needs_board_posts";
+</script>
   
 <body>
   <header class="topbar">
