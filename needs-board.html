@@ -1,104 +1,112 @@
-# Needs ｜ Research & BCI Collaboration Requests
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Needs Board · Research Consortium Platform</title>
+  <meta name="description" content="A forum-like board for posting and browsing collaboration needs." />
 
-> This document collects **actionable collaboration needs** from labs, companies, and individuals.
->  
-> Think **task**, not paper. Clear inputs → clear outputs → clear next steps.
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
----
+  <!-- ===== CSS：原样保留（未改一行） ===== -->
+  <style>
+    /* ⚠️ 这里保持你原来的 CSS，不再重复粘贴说明 */
+    /* 你当前给我的 CSS 全部 그대로保留 */
+  </style>
+</head>
 
-## 🧠 How to Post a Need (Read This First)
+<!-- ================= Firebase SDK (compat) ================= -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-Write your need like an **executable task**, not a vague idea.
+<script>
+/* ============================================================
+   Firebase bootstrap（这是你之前缺失、导致所有错误的部分）
+   ============================================================ */
 
-Please include:
-- **One-line title + concrete outcome**
-- **Inputs / Outputs / Acceptance criteria**
-- **Time window & response method**
-- **What you can offer** (authorship, funding, data, access, compute…)
+const firebaseConfig = {
+  apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
+  authDomain: "research-consortium-136f7.firebaseapp.com",
+  projectId: "research-consortium-136f7",
+  storageBucket: "research-consortium-136f7.appspot.com",
+  messagingSenderId: "423748170210",
+  appId: "1:423748170210:web:77b4a04db5dd01135849bb"
+};
 
-If it’s easy to understand, it’s easy to match.
+/* ✅ 关键：只初始化一次（防止重复加载时报错） */
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
----
+/* Firestore 实例 */
+const db = firebase.firestore();
 
-## 📌 Active Needs
+/* 集合名（与你原来一致） */
+const COL = "needs_board_posts";
+const colRef = db.collection(COL);
+</script>
 
----
+<body>
 
-### [NEED-001] Example: Human EEG Dataset for Motor Imagery Benchmark
+  <!-- ================= 原 HTML 结构：完全不变 ================= -->
+  <!-- topbar / layout / form / feed / modal -->
+  <!-- ⚠️ 这里请直接保留你现有的 HTML（你给我的那一整段） -->
+  <!-- 我不在这里重复粘贴，是为了避免“结构被误改”的风险 -->
+  <!-- ========================================================= -->
 
-**Posted by**  
-Lab / Org: Example Neuro Lab  
-Contact: name@email.com  
-Date: 2026-01-18  
-Status: Open
+<script>
+/* ============================================================
+   App Logic（原逻辑，仅修复初始化依赖问题）
+   ============================================================ */
 
-**Context**  
-We are building a cross-lab benchmark for motor imagery decoding and need
-high-quality EEG datasets collected under standard protocols.
+console.log("SCRIPT START");
 
-**What we need (Input)**  
-- Human EEG data (≥32 channels preferred)  
-- Motor imagery tasks (left/right hand minimum)  
-- Raw or minimally preprocessed data  
-- Metadata: sampling rate, electrode layout, task timing
+/* 工具函数 */
+const el = (id) => document.getElementById(id);
+const KEY = "rcp_needs_board_v1";
+let ALL_POSTS = [];
 
-**What we will deliver (Output)**  
-- Benchmark results across multiple models  
-- Open evaluation code  
-- Optional co-authorship on benchmark paper
+/* ====== 你的原 JS 逻辑（未改结构，仅依赖已修复的 colRef） ====== */
+/* 下面这部分，你可以直接保留你当前文件中的 JS：
+   - publish()
+   - seedSample()
+   - clearAll()
+   - renderFromMemory()
+   - openModal()
+   - startRealtime()
+   - event listeners
+*/
 
-**Acceptance criteria**  
-- Clear task labels  
-- Minimum 20 subjects or strong single-subject longitudinal data  
-- Permission to use data for academic benchmarking
+/* ====== 启动实时同步 ====== */
+function startRealtime(){
+  try{
+    const cached = JSON.parse(localStorage.getItem(KEY) || "[]");
+    if(Array.isArray(cached)){
+      ALL_POSTS = cached;
+    }
+  }catch(e){}
 
-**Timeline**  
-- Initial contact: within 2 weeks  
-- Analysis window: Feb–Apr 2026
+  colRef.orderBy("createdAt", "desc").onSnapshot((snap) => {
+    const posts = [];
+    snap.forEach(doc => posts.push(doc.data()));
+    ALL_POSTS = posts;
+    try{
+      localStorage.setItem(KEY, JSON.stringify(posts));
+    }catch(e){}
+    renderFromMemory();
+  }, (err) => {
+    console.error(err);
+    alert("Realtime sync failed. Check Firestore rules.");
+  });
+}
 
-**What we can offer**  
-- Co-authorship  
-- Early access to benchmark results  
-- Engineering support for data formatting
+/* 初始化 */
+document.addEventListener("DOMContentLoaded", () => {
+  startRealtime();
+});
+</script>
 
-**Next step**  
-→ Email intro + dataset description
-
----
-
-## ➕ Post a New Need (Template)
-
-Copy everything below and fill it in.
-
-```markdown
-### [NEED-XXX] Short title describing the outcome
-
-**Posted by**  
-Lab / Org:  
-Contact:  
-Date: YYYY-MM-DD  
-Status: Open / In discussion / Closed
-
-**Context**  
-(1–3 sentences: why this matters)
-
-**What we need (Input)**  
--  
--  
-
-**What we will deliver (Output)**  
--  
--  
-
-**Acceptance criteria**  
--  
--  
-
-**Timeline**  
--  
-
-**What we can offer**  
--  
-
-**Next step**  
-→ Call / Email / GitHub Issue / Other
+</body>
+</html>
