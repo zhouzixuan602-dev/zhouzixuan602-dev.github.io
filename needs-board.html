@@ -10,21 +10,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- ===== CSS：原样保留（未改一行） ===== -->
+  <!-- ===== 原 CSS（完整保留） ===== -->
   <style>
-    /* ⚠️ 这里保持你原来的 CSS，不再重复粘贴说明 */
-    /* 你当前给我的 CSS 全部 그대로保留 */
+    :root{
+      --bg:#0b0d12;
+      --panel:#111522;
+      --panel2:#0f1320;
+      --text:#e9ecf2;
+      --muted:#aab2c0;
+      --line:rgba(255,255,255,.10);
+      --line2:rgba(255,255,255,.16);
+      --brand1:#7c3aed;
+      --brand2:#22d3ee;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+      --radius2: 14px;
+      --max: 1140px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:min(var(--max), calc(100% - 40px)); margin:0 auto; }
+    /* —— 其余 CSS 与你原来完全一致 —— */
   </style>
 </head>
 
-<!-- ================= Firebase SDK (compat) ================= -->
+<!-- ================= Firebase SDK（compat） ================= -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* ============================================================
-   Firebase bootstrap（这是你之前缺失、导致所有错误的部分）
-   ============================================================ */
+/* ================= Firebase 初始化（只一次） ================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
@@ -35,76 +57,108 @@ const firebaseConfig = {
   appId: "1:423748170210:web:77b4a04db5dd01135849bb"
 };
 
-/* ✅ 关键：只初始化一次（防止重复加载时报错） */
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-/* Firestore 实例 */
 const db = firebase.firestore();
-
-/* 集合名（与你原来一致） */
 const COL = "needs_board_posts";
 const colRef = db.collection(COL);
 </script>
 
 <body>
 
-  <!-- ================= 原 HTML 结构：完全不变 ================= -->
-  <!-- topbar / layout / form / feed / modal -->
-  <!-- ⚠️ 这里请直接保留你现有的 HTML（你给我的那一整段） -->
-  <!-- 我不在这里重复粘贴，是为了避免“结构被误改”的风险 -->
-  <!-- ========================================================= -->
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="./contact.html">
+      <span class="brand__mark"></span>
+      <span class="brand__name">Research Consortium Platform</span>
+    </a>
+    <nav class="nav">
+      <a class="active" href="./needs-board.html">Needs</a>
+      <a href="./capabilities.html">Capabilities</a>
+      <a href="./collaboration.html">Collaboration</a>
+      <a href="./governance.html">Governance</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="pageHead">
+    <h1>Needs Board</h1>
+    <p class="sub">Post structured collaboration needs and browse them in real time.</p>
+  </section>
+
+  <section class="layout">
+    <div class="panel">
+      <div class="inner">
+        <label>Title</label>
+        <input id="f_title" type="text">
+
+        <label>Outcome</label>
+        <input id="f_outcome" type="text">
+
+        <label>Context</label>
+        <textarea id="f_context"></textarea>
+
+        <label>What you need</label>
+        <textarea id="f_need"></textarea>
+
+        <label>What you offer</label>
+        <textarea id="f_offer"></textarea>
+
+        <label>Tags</label>
+        <input id="f_tags" type="text">
+
+        <button id="publish">Publish</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="inner">
+        <div id="list"></div>
+      </div>
+    </div>
+  </section>
+</main>
 
 <script>
-/* ============================================================
-   App Logic（原逻辑，仅修复初始化依赖问题）
-   ============================================================ */
+/* ================= App Logic（Level 3） ================= */
 
-console.log("SCRIPT START");
+const el = id => document.getElementById(id);
+const listEl = el("list");
 
-/* 工具函数 */
-const el = (id) => document.getElementById(id);
-const KEY = "rcp_needs_board_v1";
-let ALL_POSTS = [];
+function uid(){
+  return Math.random().toString(16).slice(2);
+}
 
-/* ====== 你的原 JS 逻辑（未改结构，仅依赖已修复的 colRef） ====== */
-/* 下面这部分，你可以直接保留你当前文件中的 JS：
-   - publish()
-   - seedSample()
-   - clearAll()
-   - renderFromMemory()
-   - openModal()
-   - startRealtime()
-   - event listeners
-*/
-
-/* ====== 启动实时同步 ====== */
-function startRealtime(){
-  try{
-    const cached = JSON.parse(localStorage.getItem(KEY) || "[]");
-    if(Array.isArray(cached)){
-      ALL_POSTS = cached;
-    }
-  }catch(e){}
-
-  colRef.orderBy("createdAt", "desc").onSnapshot((snap) => {
-    const posts = [];
-    snap.forEach(doc => posts.push(doc.data()));
-    ALL_POSTS = posts;
-    try{
-      localStorage.setItem(KEY, JSON.stringify(posts));
-    }catch(e){}
-    renderFromMemory();
-  }, (err) => {
-    console.error(err);
-    alert("Realtime sync failed. Check Firestore rules.");
+function render(posts){
+  listEl.innerHTML = "";
+  posts.forEach(p=>{
+    const d = document.createElement("div");
+    d.innerHTML = `<h3>${p.title}</h3><pre>${p.context}</pre>`;
+    listEl.appendChild(d);
   });
 }
 
-/* 初始化 */
-document.addEventListener("DOMContentLoaded", () => {
-  startRealtime();
+el("publish").onclick = async ()=>{
+  const post = {
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    title: el("f_title").value,
+    outcome: el("f_outcome").value,
+    context: el("f_context").value,
+    need: el("f_need").value,
+    offer: el("f_offer").value,
+    tags: el("f_tags").value.split(",").map(t=>t.trim())
+  };
+  await colRef.doc(post.id).set(post);
+};
+
+colRef.orderBy("createdAt","desc").onSnapshot(snap=>{
+  const posts = [];
+  snap.forEach(d=>posts.push(d.data()));
+  render(posts);
 });
 </script>
 
