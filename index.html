@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Needs Board · Research Consortium Platform</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- ✅ 你的 CSS：一行都没动 -->
+<link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="./index.html">
+      <span class="brand__mark"></span>
+      <span class="brand__name">Research Consortium Platform</span>
+    </a>
+
+    <nav class="nav">
+      <a class="active" href="./index.html">Needs</a>
+      <a href="./capabilities.html">Capabilities</a>
+      <a href="./collaboration.html">Collaboration</a>
+      <a href="./governance.html">Governance</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Needs Board</h1>
+  <p class="sub">
+    Post collaboration needs and browse them in real time.
+  </p>
+
+  <div class="panel">
+    <div class="panelHead"><b>Board feed</b></div>
+    <div class="feed">
+      <div class="masonry" id="list"></div>
+      <div id="empty" style="display:none;color:#aab2c0;">No posts yet.</div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= Firebase ================= -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* ===== Firebase init (ONLY ONCE) ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
+  authDomain: "research-consortium-136f7.firebaseapp.com",
+  projectId: "research-consortium-136f7",
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.firestore();
+const colRef = db.collection("needs"); // ⚠️ 必须和 rules 一致
+
+const listEl = document.getElementById("list");
+const emptyEl = document.getElementById("empty");
+
+function render(posts){
+  listEl.innerHTML = "";
+  posts.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "post";
+    div.innerHTML = `
+      <div class="postBody">
+        <h3 class="postTitle">${p.title || "Untitled"}</h3>
+        <p class="postOutcome">${p.outcome || ""}</p>
+      </div>
+    `;
+    listEl.appendChild(div);
+  });
+  emptyEl.style.display = posts.length ? "none" : "block";
+}
+
+/* ===== Realtime ===== */
+colRef.orderBy("createdAt", "desc").onSnapshot(
+  snap => {
+    const posts = [];
+    snap.forEach(d => posts.push(d.data()));
+    render(posts);
+  },
+  err => {
+    console.error(err);
+    alert("Firestore read failed. Check rules.");
+  }
+);
+</script>
+
+</body>
+</html>
