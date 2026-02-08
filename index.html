@@ -1,102 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Needs Board · Research Consortium Platform</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-<style>
-body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:#0b0d12;
-  color:#e9ecf2;
-}
-main{max-width:900px;margin:40px auto;padding:0 20px;}
-h1{margin-bottom:8px;}
-.card{
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:12px;
-  background:rgba(255,255,255,.03);
-}
-input,textarea,button{
-  width:100%;
-  margin:6px 0;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.2);
-  background:#111;
-  color:#fff;
-}
-button{
-  background:#7c3aed;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Neural Need Web</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-<main>
-<h1>Needs Board</h1>
+  <header class="topbar glass">
+    <div class="brand">
+      <div class="logo">◎</div>
+      <div>
+        <div class="title">Neural Need Web</div>
+        <div class="subtitle">Need posts + interactions (offline)</div>
+      </div>
+    </div>
 
-<section class="card">
-<h3>Post a Need</h3>
-<input id="title" placeholder="Title"/>
-<textarea id="context" placeholder="Context"></textarea>
-<button id="publish">Publish</button>
-</section>
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="Search needs (title / tags)..." />
+    </div>
 
-<section>
-<h3>Board</h3>
-<div id="list"></div>
-</section>
-</main>
+    <div class="right">
+      <button id="newNeedBtn" class="btn primary">New Need</button>
+      <div class="userpill glass2" title="Local profile (no login)">
+        <span class="avatar">Z</span>
+        <span id="userName">Zixuan</span>
+      </div>
+    </div>
+  </header>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <main class="layout">
+    <section class="panel glass" aria-label="Need Feed">
+      <div class="panelHeader">
+        <div class="h">Need Feed</div>
+        <div class="muted" id="feedMeta">0 items</div>
+      </div>
+      <div id="needList" class="list"></div>
+    </section>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAT_2rdOsgITzuGvA_jfVsIXsSAY_mCihU",
-  authDomain: "research-consortium-136f7.firebaseapp.com",
-  projectId: "research-consortium-136f7",
-};
+    <section class="panel glass" aria-label="Need Detail">
+      <div class="panelHeader">
+        <div class="h">Detail</div>
+        <div class="muted">Open a need to interact</div>
+      </div>
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const colRef = db.collection("needs");
+      <div id="detailEmpty" class="empty">
+        <div class="emptyCard glass2">
+          <div class="emptyTitle">No need selected</div>
+          <div class="emptyText">Click a card on the left. Create a Need to start a discussion.</div>
+        </div>
+      </div>
 
-const list = document.getElementById("list");
+      <div id="detail" class="detail hidden">
+        <div class="detailTop">
+          <div>
+            <div id="detailTitle" class="detailTitle"></div>
+            <div id="detailMeta" class="detailMeta"></div>
+            <div id="detailTags" class="tags"></div>
+          </div>
 
-colRef.orderBy("createdAt","desc").onSnapshot(snap=>{
-  list.innerHTML="";
-  snap.forEach(doc=>{
-    const d = doc.data();
-    const div = document.createElement("div");
-    div.className="card";
-    div.innerHTML = `<b>${d.title}</b><p>${d.context}</p>`;
-    list.appendChild(div);
-  });
-});
+          <div class="detailActions">
+            <button id="interestBtn" class="btn">☆ Interest</button>
+            <button id="deleteNeedBtn" class="btn danger">Delete</button>
+          </div>
+        </div>
 
-document.getElementById("publish").onclick = async ()=>{
-  const title = document.getElementById("title").value.trim();
-  const context = document.getElementById("context").value.trim();
-  if(!title || !context) return alert("Fill all fields");
-  await colRef.add({
-    title, context,
-    createdAt: new Date().toISOString()
-  });
-};
-</script>
+        <div id="detailBody" class="detailBody"></div>
+
+        <div class="divider"></div>
+
+        <div class="threadHead">
+          <div class="h2">Thread</div>
+          <div class="muted" id="threadMeta">0 comments</div>
+        </div>
+
+        <div id="commentList" class="comments"></div>
+
+        <div class="composer glass2">
+          <textarea id="commentInput" placeholder="Write a text-only comment..." rows="3"></textarea>
+          <div class="composerBar">
+            <div class="muted">Enter to submit, Shift+Enter for newline</div>
+            <button id="sendCommentBtn" class="btn primary">Post</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: New Need -->
+  <div id="modalBackdrop" class="backdrop hidden"></div>
+  <div id="modal" class="modal glass hidden" role="dialog" aria-modal="true" aria-label="Create New Need">
+    <div class="modalHeader">
+      <div class="h">Create a Need</div>
+      <button id="closeModalBtn" class="iconbtn" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <label class="field">
+        <div class="label">Title</div>
+        <input id="needTitleInput" type="text" maxlength="140" placeholder="One clear sentence..." />
+      </label>
+
+      <label class="field">
+        <div class="label">Tags (comma separated)</div>
+        <input id="needTagsInput" type="text" placeholder="e.g., BCI, optics, decoding" />
+      </label>
+
+      <label class="field">
+        <div class="label">Body</div>
+        <textarea id="needBodyInput" rows="6" maxlength="20000" placeholder="Describe the need. Text-only."></textarea>
+      </label>
+    </div>
+
+    <div class="modalFooter">
+      <button id="createNeedBtn" class="btn primary">Create</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
